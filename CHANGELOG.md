@@ -56,4 +56,4 @@ Changelog
  
  
 ## Version 9.6.1.0(2018.05.16)
-Initial release.
+Initial release..
