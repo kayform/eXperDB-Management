@@ -1,5 +1,7 @@
 language: java
-script: "mvn cobertura:cobertura"
+script: 
+  - mvn cobertura:cobertura eXperDB-Management-Agent
+  - mvn cobertura:cobertura eXperDB-Management-WebConsole
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
