@@ -1,5 +1,7 @@
 language: java
 
+install: ant deps
+
 jdk:
   - openjdk8
 
@@ -8,8 +10,9 @@ cache:
     - $HOME/.m2
 
 script: 
-  - (cd eXperDB-Management-Agent; mvn cobertura:cobertura)
-
+  - (cd eXperDB-Management-Agent; mvn cobertura:cobertura clean install package)
+  - (cd eXperDB-Management-Agent/ant_build; ant -buildfile build.xml deploy)
+  
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 
@@ -22,3 +25,7 @@ branches:
     - master
     - kayformp
     
+before_deploy:
+    - 
+ - mkdir -p deploy
+ - mv springboot-webservice.zip deploy/springboot-webservice.zip
