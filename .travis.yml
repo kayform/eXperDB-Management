@@ -25,8 +25,3 @@ branches:
   only:
     - master
     - kayformp
-    
-before_deploy:
-    - 
- - mkdir -p deploy
- - mv springboot-webservice.zip deploy/springboot-webservice.zip
