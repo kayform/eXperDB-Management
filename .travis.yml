@@ -1,6 +1,20 @@
 language: java
-script: "mvn cobertura:cobertura"
+
+install: ant deps
+
+jdk:
+  - openjdk8
+
+cache:
+  directories:
+    - $HOME/.m2
+
+script: 
+  - (cd eXperDB-Management-Agent; mvn cobertura:cobertura clean install package)
+  - (cd eXperDB-Management-Agent/ant_build; ant -buildfile build.xml deploy)
+  
 after_success:
+  - echo "hello"
   - bash <(curl -s https://codecov.io/bash)
 
 env:
@@ -10,4 +24,3 @@ env:
 branches:
   only:
     - master
-
