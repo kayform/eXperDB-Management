@@ -1,7 +1,5 @@
 language: java
 
-install: ant deps
-
 jdk:
   - openjdk8
 
@@ -24,3 +22,6 @@ env:
 branches:
   only:
     - master
+    
+before_deploy:
+  - mkdir -p deploy
