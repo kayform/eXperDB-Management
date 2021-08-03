@@ -257,6 +257,11 @@ function fn_openSource(){
 	toggleLayer($('#pop_layer_openSource'), 'on');
 }
 
+// Support
+function fn_support() {
+	toggleLayer($('#pop_layer_support'), 'on');
+}
+
 // 스케줄정보
 function fn_scdLayer(scd_id){
 	$.ajax({
@@ -708,8 +713,69 @@ function fn_scriptLayer(wrk_id){
 }
 
 //db2pg config정보
-function fn_db2pgConfigLayer(wrk_nm){
-	toggleLayer($('#pop_layer_db2pgConfig'), 'on');	
+function fn_db2pgConfigLayer(config_nm){
+	$.ajax({
+		url : "/selectDb2pgConfigInfo.do",
+		data : {
+			config_nm : config_nm
+		},
+		dataType : "json",
+		type : "post",
+		beforeSend: function(xhr) {
+	        xhr.setRequestHeader("AJAX", true);
+	     },
+	     error : function(xhr, status, error) {
+				if(xhr.status == 401) {
+					showSwalIconRst(message_msg02, '<spring:message code="common.close" />', '', 'error', 'top');
+				} else if(xhr.status == 403) {
+					showSwalIconRst(message_msg03, '<spring:message code="common.close" />', '', 'error', 'top');
+				} else {
+					showSwalIcon("ERROR CODE : "+ xhr.status+ "\n\n"+ "ERROR Message : "+ error+ "\n\n"+ "Error Detail : "+ xhr.responseText.replace(/(<([^>]+)>)/gi, ""), '<spring:message code="common.close" />', '', 'error');
+				}
+			},
+		success : function(result) {
+			if(result==null){
+				showSwalIcon('서버에서 config 정보가 삭제 되어 config 정보를 확인할 수 없습니다.', '<spring:message code="common.close" />', '', 'error');
+			}else{
+				$("#config").html(result);
+				$('#pop_layer_db2pgConfig').modal("show");
+			}
+	
+		}
+	});
+}
+
+//db2pg ddl 결과 정보
+function fn_db2pgDDLResultLayer(ddl_save_pth,dtb_nm){
+	$.ajax({
+		url : "/db2pg/db2pgDdlCall.do",
+	  	data : {
+	  		ddl_save_pth : ddl_save_pth,
+	  		dtb_nm : dtb_nm		  		
+	  	},
+		type : "post",
+		beforeSend: function(xhr) {
+	        xhr.setRequestHeader("AJAX", true);
+	     },
+		error : function(xhr, status, error) {
+			if(xhr.status == 401) {
+				alert('<spring:message code="message.msg02" />');
+				top.location.href = "/";
+			} else if(xhr.status == 403) {
+				alert('<spring:message code="message.msg03" />');
+				top.location.href = "/";
+			} else {
+				alert("ERROR CODE : "+ xhr.status+ "\n\n"+ "ERROR Message : "+ error+ "\n\n"+ "Error Detail : "+ xhr.responseText.replace(/(<([^>]+)>)/gi, ""));
+			}
+		},
+		success : function(result) {
+			$("#table").html(result.data[0].RESULT_MSG);
+			$("#constraint").html(result.data[1].RESULT_MSG);
+			$("#index").html(result.data[2].RESULT_MSG);
+			$("#sequence").html(result.data[3].RESULT_MSG);
+		}
+	});	
+	toggleLayer($('#pop_layer_db2pgDDLResult'), 'on');	
 }
 
 //패스워드 확인

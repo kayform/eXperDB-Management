@@ -94,8 +94,25 @@ public class MenuAuthorityController {
 				Properties props = new Properties();
 				props.load(new FileInputStream(ResourceUtils.getFile("classpath:egovframework/tcontrolProps/globals.properties")));
 				String encrypt_useyn = props.get("encrypt.useyn").toString();		
+				//백업 사용 여부 추가 2021-04-13 변승우
+				String bnr_useyn = props.get("bnr.useyn").toString();		
+
+			    /*proxy 메뉴사용 사용유무 추가 2021-04-23  */
+				String proxy_menu_useyn = "";
+				if (props.get("proxy.menu.useyn") != null) {
+					proxy_menu_useyn = props.get("proxy.menu.useyn").toString(); 
+				}
+
+			    /*proxy 사용유무 추가 2021-04-23  */
+				String proxy_useyn = "";
+				if (props.get("proxy.useyn") != null) {
+					proxy_useyn = props.get("proxy.useyn").toString(); 
+				}
 				
 				mv.addObject("encrypt_useyn", encrypt_useyn);
+				mv.addObject("bnr_useyn", bnr_useyn);
+				mv.addObject("proxy_useyn", proxy_useyn);
+				mv.addObject("proxy_menu_useyn", proxy_menu_useyn);
 				mv.addObject("read_aut_yn", menuAut.get(0).get("read_aut_yn"));
 				mv.addObject("wrt_aut_yn", menuAut.get(0).get("wrt_aut_yn"));				
 				mv.setViewName("admin/menuAuthority/menuAuthority");
@@ -195,19 +212,31 @@ public class MenuAuthorityController {
 	@SuppressWarnings("unused")
 	@RequestMapping(value = "/selectUsrmnuautList.do")
 	@ResponseBody
-	public List<MenuAuthorityVO> selectUsrmnuautList(@ModelAttribute("menuAuthorityVO") MenuAuthorityVO menuAuthorityVO, HttpServletResponse response) {
+	public List<MenuAuthorityVO> selectUsrmnuautList(@ModelAttribute("userVo") UserVO userVo, @ModelAttribute("menuAuthorityVO") MenuAuthorityVO menuAuthorityVO, HttpServletResponse response) {
 		
 		//해당메뉴 권한 조회 (공통메소드호출),
 		CmmnUtils cu = new CmmnUtils();
 		menuAut = cu.selectMenuAut(menuAuthorityService, "MN000501");
 				
 		List<MenuAuthorityVO> resultSet = null;
+		List<MenuAuthorityVO> addMenu = null;
 		try {		
 			//읽기 권한이 없는경우 에러페이지 호출 [추후 Exception 처리예정]
 			if(menuAut.get(0).get("read_aut_yn").equals("N")){
 				response.sendRedirect("/autError.do");
 				return resultSet;
 			}else{
+				
+				addMenu=menuAuthorityService.selectAddMenu(menuAuthorityVO);
+				
+				//추가된 메뉴조회 하여, 있을경우 추가된 메뉴 권한 N, 등록
+				if(addMenu.size() > 0){
+					for(int i =0; i<addMenu.size(); i++){
+						userVo.setMnu_id(addMenu.get(i).getMnu_id());
+						menuAuthorityService.insertUsrmnuaut(userVo);
+					}
+				}
+				
 				resultSet = menuAuthorityService.selectUsrmnuautList(menuAuthorityVO);		
 			}	
 		} catch (Exception e) {

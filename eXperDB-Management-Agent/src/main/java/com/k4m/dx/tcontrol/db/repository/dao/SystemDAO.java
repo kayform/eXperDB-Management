@@ -10,6 +10,7 @@ import com.k4m.dx.tcontrol.db.repository.vo.AgentInfoVO;
 import com.k4m.dx.tcontrol.db.repository.vo.DbServerInfoVO;
 import com.k4m.dx.tcontrol.db.repository.vo.DumpRestoreVO;
 import com.k4m.dx.tcontrol.db.repository.vo.RmanRestoreVO;
+import com.k4m.dx.tcontrol.db.repository.vo.TransVO;
 import com.k4m.dx.tcontrol.db.repository.vo.TrfTrgCngVO;
 import com.k4m.dx.tcontrol.db.repository.vo.WrkExeVO;
 
@@ -50,6 +51,10 @@ public class SystemDAO {
 		session.update("system.updateAgentInfo", vo);
 	}
 	
+	public void updateAgentStopInfo(AgentInfoVO vo) throws Exception {
+		session.update("system.updateAgentStopInfo", vo);
+	}
+
 	public AgentInfoVO selectAgentInfo(AgentInfoVO vo) throws Exception  {
 		return (AgentInfoVO) session.selectOne("system.selectAgentInfo", vo);
 	}
@@ -109,5 +114,29 @@ public class SystemDAO {
 	public void updateDUMP_RESTORE_EXELOG(DumpRestoreVO vo) throws Exception {
 		session.update("system.updateDUMP_RESTORE_EXELOG", vo);
 	}
+
+	public int selectScd_id() throws Exception {
+		return (int) session.selectOne("system.selectScd_id");
+	}
 	
+	public void insertWRKEXE_G(WrkExeVO vo) throws Exception  {
+		 session.insert("system.insertWRKEXE_G", vo);
+	}
+	
+	public void updateTransExe(TransVO transVO) throws Exception{
+		session.update("system.updateTransExe", transVO);
+	}
+	
+	public void updateTransTargetExe(TransVO transVO) throws Exception{
+		session.update("system.updateTransTargetExe", transVO);
+	}
+
+	//trans 기본사항 조회
+	public TransVO selectTransComSettingInfo(TransVO vo) throws Exception  {
+		return (TransVO) session.selectOne("system.selectTransComSettingInfo", vo);
+	}
+
+	public List<TransVO> selectTablePkInfo(TransVO vo) throws Exception {
+		return (List) session.selectList("system.selectTablePkInfo", vo);
+	}
 }

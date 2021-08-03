@@ -57,10 +57,6 @@ public class EgovBatchListnerUtl implements JobListener {
 	{	
 		try
 		{
-			System.out.println("▶▶▶ JOB 시작 시 수행!!!");		
-
-			beforeTime  = context.getFireTime();
-			
 		}
 		catch(Exception e)
 		{
@@ -79,7 +75,6 @@ public class EgovBatchListnerUtl implements JobListener {
 		
 		try
 		{
-			System.out.println("▶▶▶ JOB 실패 시 수행!!!");
 		}
 		catch(Exception e)
 		{
@@ -109,115 +104,52 @@ public class EgovBatchListnerUtl implements JobListener {
 	
 			String exe_perd_cd = (String) result.get(0).get("exe_perd_cd");
 			
-							
-			/*if(exe_perd_cd.equals("TC001601")){
-				 cal.add(Calendar.DATE, 1); 
-				 ScheduleVO scheduleVO = new ScheduleVO();
-				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
-				 scheduleVO.setScd_cndt("TC001801");
-				 hp1.put("nFireTime", beforeTime);
-				 hp2.put("nFireTime", cal.getTime());	
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
-				scheduleService.updateNxtJobTime(hp2);
-				scheduleService.updateScheduleStatus(scheduleVO);
-			}else if(exe_perd_cd.equals("TC001602")){
-				 cal.add(Calendar.DATE, 7); 
-				 ScheduleVO scheduleVO = new ScheduleVO();
-				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
-				 scheduleVO.setScd_cndt("TC001801");
-				 hp1.put("nFireTime", beforeTime);
-				 hp2.put("nFireTime", cal.getTime());
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
-				scheduleService.updateNxtJobTime(hp2);
-				scheduleService.updateScheduleStatus(scheduleVO);
-			}else if(exe_perd_cd.equals("TC001603")){
-				 cal.add(Calendar.MONTH, 1); 
-				 ScheduleVO scheduleVO = new ScheduleVO();
-				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
-				 scheduleVO.setScd_cndt("TC001801");
-				 hp1.put("nFireTime", beforeTime);
-				 hp2.put("nFireTime", cal.getTime());
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
-				scheduleService.updateNxtJobTime(hp2);
-				scheduleService.updateScheduleStatus(scheduleVO);
-			}else if(exe_perd_cd.equals("TC001604")){
-				 cal.add(Calendar.YEAR, 1); 
-				 ScheduleVO scheduleVO = new ScheduleVO();
-				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
-				 scheduleVO.setScd_cndt("TC001801");	
-				 hp1.put("nFireTime", beforeTime);
-				 hp2.put("nFireTime", cal.getTime());
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
-				scheduleService.updateNxtJobTime(hp2);
-				scheduleService.updateScheduleStatus(scheduleVO);
-			}else{
-				ScheduleVO scheduleVO = new ScheduleVO();
-				scheduleVO.setScd_id(Integer.parseInt(scd_id));
-				scheduleVO.setScd_cndt("TC001803");
-				hp1.put("nFireTime", beforeTime);
-				hp2.put("nFireTime", context.getScheduledFireTime());	
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp1);
-				//1회수행은 끝나고 이전작업수행시간 업데이트
-				System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
-				scheduleService.updatePrevJobTime(hp2);
-				scheduleService.updateScheduleStatus(scheduleVO);		
-			}			*/
-		    
+			
 		    if(exe_perd_cd.equals("TC001601")){
 				 ScheduleVO scheduleVO = new ScheduleVO();
 				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
 				 String scd_cndt = "TC001801";
 				 hp1.put("nFireTime", beforeTime);			
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				 LOGGER.debug("================= PrevJ obTime Update ");
 				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
+				 LOGGER.debug("================= Next JobTime Update ");
 				updateScheduleNextTime(scd_id, scd_cndt);
 			}else if(exe_perd_cd.equals("TC001602")){
 				 ScheduleVO scheduleVO = new ScheduleVO();
 				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
 				 String scd_cndt = "TC001801";
 				 hp1.put("nFireTime", beforeTime);
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				 LOGGER.debug("================= PrevJ obTime Update ");
 				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
+				LOGGER.debug("================= Next JobTime Update ");
 				updateScheduleNextTime(scd_id, scd_cndt);
 			}else if(exe_perd_cd.equals("TC001603")){
 				 ScheduleVO scheduleVO = new ScheduleVO();
 				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
 				 String scd_cndt = "TC001801";
 				 hp1.put("nFireTime", beforeTime);
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				 LOGGER.debug("================= PrevJ obTime Update ");
 				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
+				LOGGER.debug("================= Next JobTime Update ");
 				updateScheduleNextTime(scd_id, scd_cndt);
 			}else if(exe_perd_cd.equals("TC001604")){	
 				 ScheduleVO scheduleVO = new ScheduleVO();
 				 scheduleVO.setScd_id(Integer.parseInt(scd_id));
 				 String scd_cndt = "TC001801";
 				 hp1.put("nFireTime", beforeTime);
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				 LOGGER.debug("================= PrevJ obTime Update ");
 				scheduleService.updatePrevJobTime(hp1);
-				System.out.println("▶▶▶ 다음 작업 수행시간 업데이트");
+				LOGGER.debug("================= Next JobTime Update ");
 				updateScheduleNextTime(scd_id, scd_cndt);
 			}else{				
 				String scd_cndt = "TC001803";
 				hp1.put("nFireTime", beforeTime);
-				 System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				LOGGER.debug("================= PrevJ obTime Update ");
 				scheduleService.updatePrevJobTime(hp1);
 				//1회수행은 끝나고 이전작업수행시간 업데이트
-				System.out.println("▶▶▶ 이전 작업 수행시간 업데이트");
+				LOGGER.debug("================= Next JobTime Update ");
 				updateScheduleNextTime(scd_id, scd_cndt);
 			}
-			System.out.println("================================================");		
 		}
 		catch(Exception e)
 		{
@@ -398,10 +330,14 @@ public class EgovBatchListnerUtl implements JobListener {
                 // 현재날짜+수행시간 + 1년
             	 cal.add(Calendar.YEAR, 1); 
             	 hp2.put("nFireTime", cal.getTime());	
-            }        
+            }else{
+            	 //agent에서 스케줄 상태 업데이트
+            	scheduleService.updateScheduleStatus(scheduleVO);
+            }
             scheduleService.updateNxtJobTime(hp2);
 
-			scheduleService.updateScheduleStatus(scheduleVO);
+            //agent에서 스케줄 상태 업데이트
+			//scheduleService.updateScheduleStatus(scheduleVO);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

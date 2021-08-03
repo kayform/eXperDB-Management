@@ -143,10 +143,12 @@ public class RunCommandExec extends Thread {
 		String strResultErrInfo = "";
 		try{
 			//proc = Runtime.getRuntime().exec(cmd);
+socketLogger.info("cmd --> " + cmd);
+			
 			proc = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", cmd}); 
 			proc.waitFor ();
 			
-			socketLogger.info("proc.exitValue() --> " + proc.exitValue());
+		//	socketLogger.info("proc.exitValue() --> " + proc.exitValue());
 			
 		//	socketLogger.info("@@@@@@@@@ scanner start" );
 			
@@ -172,7 +174,7 @@ public class RunCommandExec extends Thread {
 				while ( out.ready() ) {
 					strResult += out.readLine();
 					
-					socketLogger.info("out.ready() --> " + strResult);
+				/*	socketLogger.info("out.ready() --> " + strResult);*/
 				}
 				out.close();
 				strReturnVal = "success";

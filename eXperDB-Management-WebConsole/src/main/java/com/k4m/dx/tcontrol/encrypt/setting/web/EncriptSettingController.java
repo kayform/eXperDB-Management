@@ -199,7 +199,7 @@ public class EncriptSettingController {
 			
 			//옵션설정저장1
 			String strRows01 = request.getParameter("arrmaps01").toString().replaceAll("&quot;", "\"");
-			System.out.println(strRows01);
+
 			JSONArray rows01 = (JSONArray) new JSONParser().parse(strRows01);
 			for (int i = 0; i < rows01.size(); i++) {
 				obj01 = (JSONObject) rows01.get(i);		
@@ -210,8 +210,8 @@ public class EncriptSettingController {
 			if(result01.get("resultCode").equals("0000000000")){
 				//옵션설정저장2
 				String strRows02 = request.getParameter("arrmaps02").toString().replaceAll("&quot;", "\"");
-				System.out.println(strRows02);
 				JSONArray rows02 = (JSONArray) new JSONParser().parse(strRows02);
+
 				for (int i = 0; i < rows02.size(); i++) {
 					obj02 = (JSONObject) rows02.get(i);		
 				}	
@@ -690,8 +690,9 @@ public class EncriptSettingController {
 	 */
 	@RequestMapping(value = "/popup/agentMonitoringModifyForm.do")
 	public ModelAndView agentMonitoringModifyForm(@ModelAttribute("historyVO") HistoryVO historyVO, HttpServletRequest request)  {
-		ModelAndView mv = new ModelAndView();
 		
+		ModelAndView mv = new ModelAndView("jsonView");
+
 		JSONArray result = new JSONArray();
 
 		Map hp = new HashMap();
@@ -718,26 +719,9 @@ public class EncriptSettingController {
 				String latestDateTime = request.getParameter("latestDateTime");
 				String extendedField = request.getParameter("extendedField").toString().replaceAll("&quot;", "\"");
 				String entityUid = request.getParameter("entityUid");
-				System.out.println("확장팩 ="+ extendedField);
-				
-				//JSONArray rows = (JSONArray) new JSONParser().parse(extendedField);
-				
-				//System.out.println(rows);
-				
-				/*for (int i = 0; i < rows.size(); i++) {
-					resultJson = (JSONObject) rows.get(i);
-				}
 
-				Iterator<?> iter = resultJson.entrySet().iterator();
-				while (iter.hasNext()) {
-					Map.Entry entry = (Map.Entry) iter.next();
-					
-					key.add(String.valueOf(entry.getKey()));
-					value.add(String.valueOf(entry.getValue()));
-					System.out.println(String.valueOf(entry.getKey()) + " = " + String.valueOf(entry.getValue()));
-				}*/
-									
-				System.out.println(key.size());
+				System.out.println("확장팩 ="+ extendedField);
+			
 				HttpSession session = request.getSession();
 				LoginVO loginVo = (LoginVO) session.getAttribute("session");
 				String restIp = loginVo.getRestIp();
@@ -748,8 +732,6 @@ public class EncriptSettingController {
 				
 				EncryptSettingServiceCall essc = new EncryptSettingServiceCall();
 				result = essc.selectParamSysCodeList( restIp, restPort, strTocken, loginId, entityId);
-				
-				mv.setViewName("encrypt/popup/agentMonitoringModifyForm");
 				
 				mv.addObject("result",result);
 				mv.addObject("entityUid",entityUid);

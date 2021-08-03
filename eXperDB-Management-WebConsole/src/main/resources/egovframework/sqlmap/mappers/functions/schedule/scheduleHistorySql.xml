@@ -51,6 +51,55 @@
 		)AA
 		WHERE AA.DB_SVR_NM LIKE #{db_svr_nm} OR AA.DB_SVR_NM IS NULL;
 	</select>
+	
+	<select id="selectScheduleHistoryNew" resultType="hashmap" parameterType="hashmap" >
+		/**
+		* Query ID : selectScheduleHistoryNew
+		* Description : 스케줄이력 조회
+		* Author : 변승우
+		**/
+		SELECT
+		  (ROW_NUMBER() OVER()) AS ROWNUM
+		, (ROW_NUMBER() OVER()) AS IDX
+		, AA.SCD_ID
+		, AA.IPADR
+		, AA.EXE_GRP_SN
+		, AA.SCD_NM
+		, AA.EXE_SN
+		, AA.EXE_RSLT_CD
+		, AA.DB_SVR_NM
+		, TO_CHAR(AA.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_STRT_DTM
+		, TO_CHAR(AA.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_END_DTM
+		, AA.WRK_DTM
+		FROM(
+			SELECT 		
+	        A.SCD_ID
+	        , C.IPADR
+	        , A.EXE_GRP_SN 
+			, A.SCD_NM
+			, MIN(A.EXE_SN) AS EXE_SN
+			, MAX(A.EXE_RSLT_CD) AS EXE_RSLT_CD
+			, (SELECT S.DB_SVR_NM FROM T_DBSVR_I S,T_DBSVRIPADR_I D WHERE S.DB_SVR_ID=D.DB_SVR_ID AND D.DB_SVR_IPADR_ID=A.DB_SVR_IPADR_ID)AS DB_SVR_NM
+			, MIN(A.WRK_STRT_DTM) AS WRK_STRT_DTM
+			, MAX(A.WRK_END_DTM) AS WRK_END_DTM
+			, TO_CHAR(TO_CHAR(MAX(A.WRK_END_DTM),'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP - TO_CHAR(MIN(A.WRK_STRT_DTM),'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP, 'HH24시MI분SS초') AS WRK_DTM
+			FROM T_WRKEXE_G A
+			LEFT OUTER JOIN T_DBSVRIPADR_I C ON A.DB_SVR_IPADR_ID= C.DB_SVR_IPADR_ID or A.DB_SVR_IPADR_ID=0
+			WHERE 1 = 1
+			AND C.MASTER_GBN = 'M'
+			<if test="lgi_dtm_start != null and lgi_dtm_start != '' ">
+			 AND to_char(A.WRK_END_DTM,'YYYY-MM-DD') between #{lgi_dtm_start} and #{lgi_dtm_end}
+			</if>
+			<if test="scd_nm != null and scd_nm != '' ">
+			AND A.SCD_NM LIKE #{scd_nm}
+			</if>		
+			AND A.EXE_RSLT_CD LIKE #{exe_result}
+			GROUP BY A.EXE_GRP_SN, A.SCD_NM, A.DB_SVR_IPADR_ID,A.SCD_ID,C.IPADR
+			ORDER BY ${order_type} ${order}
+		)AA
+		WHERE AA.DB_SVR_NM LIKE #{db_svr_nm} OR AA.DB_SVR_NM IS NULL;
+	</select>
+
 
 
 
@@ -217,6 +266,30 @@
 				)A
 	</select>
 	
+	<select id="selectScheduleHistoryDetailEN" resultType="hashmap" parameterType="int" >
+		SELECT 
+			  A.SCD_NM
+			, A.EXE_SN
+			, A.SCD_ID
+			, TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_STRT_DTM
+			, TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_END_DTM
+			, A.WRK_DTM
+			,(SELECT SCD_EXP FROM T_SCD_M M WHERE A.SCD_NM = M.SCD_NM)AS SCD_EXP
+			FROM(
+				SELECT 
+				 	  SCD_NM
+				 	, SCD_ID
+					, MIN(A.EXE_SN) AS EXE_SN
+					, MIN(A.WRK_STRT_DTM) AS WRK_STRT_DTM
+					, MAX(A.WRK_END_DTM) AS WRK_END_DTM
+					, TO_CHAR(TO_CHAR(MAX(A.WRK_END_DTM),'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP - TO_CHAR(MIN(A.WRK_STRT_DTM),'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP, 'HH24"Hour" MI"Minute" SS"Second"') AS WRK_DTM
+					FROM T_WRKEXE_G A
+					WHERE 1= 1
+					AND EXE_SN=#{exe_sn}
+					GROUP BY EXE_GRP_SN, SCD_NM, DB_ID, SCD_ID
+				)A
+	</select>
+	
 	<select id="selectScheduleHistoryWorkDetail" resultType="hashmap" parameterType="int" >
 		SELECT 
 		  (ROW_NUMBER() OVER()) AS ROWNUM
@@ -225,7 +298,7 @@
 		, EXE_SN
 		, TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_STRT_DTM
 		, TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_END_DTM
-		, TO_CHAR(TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP - TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP, 'HH24시MI분SS초') AS WRK_DTM
+		, TO_CHAR(TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP - TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP, 'HH24시 MI분 SS초') AS WRK_DTM
 		, (SELECT WRK_NM FROM T_WRKCNG_I WHERE WRK_ID = A.WRK_ID) WRK_NM
 		, (SELECT WRK_EXP FROM T_WRKCNG_I WHERE WRK_ID = A.WRK_ID) WRK_EXP
 		, EXE_RSLT_CD
@@ -235,4 +308,37 @@
 		WHERE EXE_GRP_SN IN(
 			SELECT EXE_GRP_SN FROM T_WRKEXE_G WHERE EXE_SN=#{exe_sn})
 	</select>	
+	<select id="selectScheduleHistoryWorkDetailEN" resultType="hashmap" parameterType="int" >
+		SELECT 
+		  (ROW_NUMBER() OVER()) AS ROWNUM
+		, WRK_ID
+		, SCD_ID
+		, EXE_SN
+		, TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_STRT_DTM
+		, TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS') AS WRK_END_DTM
+		, TO_CHAR(TO_CHAR(A.WRK_END_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP - TO_CHAR(A.WRK_STRT_DTM,'YYYY-MM-DD HH24:MI:SS')::TIMESTAMP, 'HH24"Hour" MI"Minute" SS"Second"') AS WRK_DTM
+		, (SELECT WRK_NM FROM T_WRKCNG_I WHERE WRK_ID = A.WRK_ID) WRK_NM
+		, (SELECT WRK_EXP FROM T_WRKCNG_I WHERE WRK_ID = A.WRK_ID) WRK_EXP
+		, EXE_RSLT_CD
+		, FIX_RSLTCD
+		, FIX_RSLT_MSG
+		FROM T_WRKEXE_G A
+		WHERE EXE_GRP_SN IN(
+			SELECT EXE_GRP_SN FROM T_WRKEXE_G WHERE EXE_SN=#{exe_sn})
+	</select>	
+	
+	
+		<update id="updateScheduler" parameterType="wrkExeVO">
+	   	/**
+	 	* Query ID : updateScheduler
+	 	* Description : 스케줄 시간 업데이트
+	 	* Author : 변승우
+	 	**/
+	 	UPDATE T_WRKEXE_G
+	 	SET 
+	 		   EXE_RSLT_CD = #{exe_rslt_cd}
+		       , WRK_END_DTM= now()
+	 	WHERE EXE_SN=#{exe_sn}
+	</update>
+	
 </mapper>

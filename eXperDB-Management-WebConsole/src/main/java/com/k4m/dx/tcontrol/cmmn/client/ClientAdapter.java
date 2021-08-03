@@ -494,4 +494,89 @@ public class ClientAdapter {
 		byte[]	recvBuff = cc.recv(4, false);
 		return parseToJsonObj(recvBuff);
 	}
+	
+	
+	public JSONObject dxT034(JSONObject jObj) throws Exception{
+
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	/* scale 관련 agent*/
+	public JSONObject dxT036(JSONObject jObj) throws Exception{
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	public JSONObject dxT037(JSONObject jObj) throws Exception {
+		
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	public JSONObject dxT038(JSONObject jObj) throws Exception {
+
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	public JSONObject dxT039(JSONObject jObj) throws Exception {
+		
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	public JSONObject dxT040(JSONObject jObj) throws Exception {
+		
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+
+	/**
+	 * topic 조회
+	 * @param strDxExCode
+	 * @param serverObj
+	 * @return
+	 * @throws Exception
+	 */
+	public JSONObject dxT041(String strDxExCode, JSONObject serverObj) throws Exception{
+		JSONObject jObj = new JSONObject();
+		jObj.put(ClientProtocolID.DX_EX_CODE, strDxExCode);
+		jObj.put(ClientProtocolID.SERVER_INFO, serverObj);
+
+		byte[] bt = jObj.toString().getBytes();
+		
+		cc.send(4, bt);
+		
+		byte[]	recvBuff = cc.recv(4, false);
+		return parseToJsonObj(recvBuff);
+	}
+
+	public JSONObject dxT042(JSONObject jObj) throws Exception {
+		
+		byte[] bt = jObj.toString().getBytes();
+		cc.send(4, bt);
+		byte[]	recvBuff = cc.recv(4, false);
+
+		return parseToJsonObj(recvBuff);
+	}
+	
 }

@@ -12,10 +12,11 @@ public interface ScheduleService {
 
 	/**
 	 * 전체 work 리스트 조회
+	 * @param locale_type 
 	 * @param dbServerVO
 	 * @throws Exception
 	 */
-	List<WorkVO> selectWorkList(WorkVO workVO) throws Exception;
+	List<WorkVO> selectWorkList(WorkVO workVO, String locale_type) throws Exception;
 
 	
 	/**
@@ -164,13 +165,13 @@ public interface ScheduleService {
 	int scd_nmCheck(String scd_nm) throws Exception;
 
 
-	List<Map<String, Object>> selectWrkScheduleList(int scd_id) throws Exception;
+	List<Map<String, Object>> selectWrkScheduleList(int scd_id, String locale_type) throws Exception;
 
 
-	List<Map<String, Object>> selectWorkDivList() throws Exception;
+	List<Map<String, Object>> selectWorkDivList(String locale_type) throws Exception;
 
 
-	List<Map<String, Object>> selectScdInfo(int scd_id) throws Exception;
+	List<Map<String, Object>> selectScdInfo(int scd_id, String locale_type) throws Exception;
 
 
 	List<Map<String, Object>> selectWrkInfo(int wrk_nm) throws Exception;
@@ -214,4 +215,42 @@ public interface ScheduleService {
 
 	List<Map<String, Object>> selectDb2pgScheduleWorkList(HashMap<String, Object> paramvalue) throws Exception;
 
+	
+	/**
+	 *  이관로그 등록
+	 * 
+	 * @param Map<String, Object>
+	 * @throws Exception
+	 */
+	void insertMigExe(Map<String, Object> param) throws Exception;
+
+	/**
+	 *  이관로그 수정
+	 * 
+	 * @param Map<String, Object>
+	 * @throws Exception
+	 */
+	void updateMigExe(Map<String, Object> param) throws Exception;
+
+
+	/**
+	 *  데이터 이관 스케줄 수행전, 기존 저장경로 호출
+	 * 
+	 * @param Map<String, Object>
+	 * @throws Exception
+	 */
+	String selectOldSavePath(int wrk_id) throws Exception;
+
+	
+	
+	/**
+	 *  기존 저장경로, 새로운 경로로 업데이트
+	 * 
+	 * @param Map<String, Object>
+	 * @throws Exception
+	 */
+	void updateSavePth(Map<String, Object> param) throws Exception;
+
+
+	void updateScheduler(WrkExeVO vo) throws Exception;
 }

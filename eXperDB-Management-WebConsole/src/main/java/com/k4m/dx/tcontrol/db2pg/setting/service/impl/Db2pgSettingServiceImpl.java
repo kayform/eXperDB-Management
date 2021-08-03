@@ -84,8 +84,8 @@ public class Db2pgSettingServiceImpl extends EgovAbstractServiceImpl implements 
 	}
 
 	@Override
-	public void insertDataWork(DataConfigVO dataConfigVO) throws Exception {
-		db2pgSettingDAO.insertDataWork(dataConfigVO);
+	public int insertDataWork(DataConfigVO dataConfigVO) throws Exception {
+		return db2pgSettingDAO.insertDataWork(dataConfigVO);
 	}
 
 	@Override
@@ -99,6 +99,11 @@ public class Db2pgSettingServiceImpl extends EgovAbstractServiceImpl implements 
 	}
 
 	@Override
+	public void deleteUsrQry(int db2pg_trsf_wrk_id) throws Exception {
+		db2pgSettingDAO.deleteUsrQry(db2pg_trsf_wrk_id);
+	}
+
+	@Override
 	public DDLConfigVO selectDetailDDLWork(int db2pg_ddl_wrk_id) throws Exception {
 		return db2pgSettingDAO.selectDetailDDLWork(db2pg_ddl_wrk_id);
 	}
@@ -106,6 +111,11 @@ public class Db2pgSettingServiceImpl extends EgovAbstractServiceImpl implements 
 	@Override
 	public DataConfigVO selectDetailDataWork(int db2pg_trsf_wrk_id) throws Exception {
 		return db2pgSettingDAO.selectDetailDataWork(db2pg_trsf_wrk_id);
+	}
+
+	@Override
+	public List<QueryVO> selectDetailUsrQry(int db2pg_trsf_wrk_id) throws Exception {
+		return db2pgSettingDAO.selectDetailUsrQry(db2pg_trsf_wrk_id);
 	}
 
 	@Override
@@ -127,5 +137,19 @@ public class Db2pgSettingServiceImpl extends EgovAbstractServiceImpl implements 
 	public int selectWorkSeq() throws Exception {
 		return db2pgSettingDAO.selectWorkSeq();
 	}
+
+	@Override
+	public void updateDDLSavePth(Map<String, Object> param) throws Exception {
+		db2pgSettingDAO.updateDDLSavePth(param);
+		
+	}
+
+	@Override
+	public void updateTransSavePth(Map<String, Object> param) throws Exception {
+		db2pgSettingDAO.updateTransSavePth(param);
+		
+	}
+
+
 
 }

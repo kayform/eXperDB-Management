@@ -1,38 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="ui" uri="http://egovframework.gov/ctl/ui"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@include file="../cmmn/commonLocale.jsp"%>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>eXperDB</title>
-<link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
-<link rel="stylesheet" type="text/css" href="/css/common.css">
-<link rel = "stylesheet" type = "text/css" media = "screen" href = "<c:url value='/css/dt/jquery.dataTables.min.css'/>"/>
-<link rel = "stylesheet" type = "text/css" media = "screen" href = "<c:url value='/css/dt/dataTables.jqueryui.min.css'/>"/> 
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/dt/dataTables.colVis.css'/>"/>
-<link rel="stylesheet" type="text/css" href="<c:url value='/css/dt/dataTables.checkboxes.css'/>"/>
-
-<script src ="/js/jquery/jquery-1.7.2.min.js" type="text/javascript"></script>
-<script src ="/js/jquery/jquery-ui.js" type="text/javascript"></script>
-<script src="/js/jquery/jquery.dataTables.min.js" type="text/javascript"></script>
-<script src="/js/dt/dataTables.select.min.js" type="text/javascript"></script>
-<script src="/js/dt/dataTables.jqueryui.min.js" type="text/javascript"></script>
-<script src="/js/dt/dataTables.colResize.js" type="text/javascript"></script>
-<script src="/js/dt/dataTables.checkboxes.min.js" type="text/javascript"></script>	
-<script src="/js/dt/dataTables.colVis.js" type="text/javascript"></script>	
-<script type="text/javascript" src="/js/common.js"></script>
-
 
 <script>
 var tableData = null;
 
-function fn_init(){
+function fn_init3(){
 
 	tableData = $('#dataDataTable').DataTable({
 		scrollY : "330px",
@@ -65,14 +42,15 @@ function fn_init(){
     tableData.tables().header().to$().find('th:eq(1)').css('min-width', '30px');
     tableData.tables().header().to$().find('th:eq(2)').css('min-width', '100px');
     tableData.tables().header().to$().find('th:eq(3)').css('min-width', '200px');
-    tableData.tables().header().to$().find('th:eq(4)').css('min-width', '100px');
+    tableData.tables().header().to$().find('th:eq(4)').css('min-width', '140px');
     tableData.tables().header().to$().find('th:eq(5)').css('min-width', '100px');
     tableData.tables().header().to$().find('th:eq(6)').css('min-width', '100px');
     tableData.tables().header().to$().find('th:eq(7)').css('min-width', '100px');
-    tableData.tables().header().to$().find('th:eq(8)').css('min-width', '100px');
+    tableData.tables().header().to$().find('th:eq(8)').css('min-width', '140px');
     tableData.tables().header().to$().find('th:eq(9)').css('min-width', '100px');
     tableData.tables().header().to$().find('th:eq(10)').css('min-width', '100px');
     tableData.tables().header().to$().find('th:eq(11)').css('min-width', '100px');
+
 	$(window).trigger('resize'); 
 }
 
@@ -81,15 +59,15 @@ function fn_init(){
  * 페이지 시작시 함수
  ******************************************************** */
 $(window.document).ready(function() {
-	fn_init();
-	fn_search();
+	fn_init3();
+	fn_search3();
 });
 
 
 /* ********************************************************
  * 조회
  ******************************************************** */
-	function fn_search(){
+	function fn_search3(){
 		$.ajax({
 			url : "/db2pg/selectDataWork.do", 
 		  	data : {
@@ -107,13 +85,11 @@ $(window.document).ready(function() {
 		     },
 			error : function(xhr, status, error) {
 				if(xhr.status == 401) {
-					alert("<spring:message code='message.msg02' />");
-					top.location.href = "/";
+					showSwalIconRst('<spring:message code="message.msg02" />', '<spring:message code="common.close" />', '', 'error', 'top');
 				} else if(xhr.status == 403) {
-					alert("<spring:message code='message.msg03' />");
-					top.location.href = "/";
+					showSwalIconRst('<spring:message code="message.msg03" />', '<spring:message code="common.close" />', '', 'error', 'top');
 				} else {
-					alert("ERROR CODE : "+ xhr.status+ "\n\n"+ "ERROR Message : "+ error+ "\n\n"+ "Error Detail : "+ xhr.responseText.replace(/(<([^>]+)>)/gi, ""));
+					showSwalIcon("ERROR CODE : "+ xhr.status+ "\n\n"+ "ERROR Message : "+ error+ "\n\n"+ "Error Detail : "+ xhr.responseText.replace(/(<([^>]+)>)/gi, ""), '<spring:message code="common.close" />', '', 'error');
 				}
 			},
 			success : function(data) {
@@ -133,10 +109,10 @@ $(window.document).ready(function() {
 /* ********************************************************
  * work 등록
  ******************************************************** */
- function fn_workAdd(){
+ function fn_workAdd3(){
 		var datas = tableData.rows('.selected').data();
 		if (datas.length <= 0) {
-			alert('<spring:message code="message.msg35" />');
+			showSwalIcon('<spring:message code="message.msg35" />', '<spring:message code="common.close" />', '', 'error');
 			return false;
 		} 
 		
@@ -145,8 +121,8 @@ $(window.document).ready(function() {
 	        rowList.push( tableData.rows('.selected').data()[i].wrk_id);   
 		   //rowList.push( table.rows('.selected').data()[i]);     
 	  }	
-		opener.fn_db2pgWorkAddCallback(JSON.stringify(rowList));
-		self.close();
+		fn_db2pgWorkAddCallback(JSON.stringify(rowList));
+		$('#pop_layer_db2pg_reg').modal("hide");
 	}
 </script>
 
@@ -170,78 +146,68 @@ $(window.document).ready(function() {
 }
 </style>
 <body>
-<%@include file="../cmmn/commonLocale.jsp"%>  
-
-
-<div class="pop_container">
-	<div class="pop_cts">
-		<p class="tit"><spring:message code="schedule.workReg"/></p>
-			<div class="btn_type_01">
-				<span class="btn"><button onClick="fn_search();" type="button"><spring:message code="common.search" /></button></span>
-			</div>
-			<div class="sch_form">
-				<table class="write" >
-							<caption>검색 조회</caption>
-							<colgroup>
-								<col style="width:6%;" />
-								<col style="width:20%;" />
-								<col style="width:5%;" />
-								<col style="width:20%;" />
-								<col style="width:7%;" />
-								<col style="width:22%;" />
-								<col />
-							</colgroup>
-							<tbody>
-								<tr>
-									<th scope="row" class="t9"><spring:message code="common.work_name" /></th>
-									<td><input type="text" name="data_wrk_nm" id="data_wrk_nm" class="txt t3" maxlength="25"/></td>
-									<th scope="row" class="t9">구분</th>
-									<td>		
-										<select name="data_dbms_dscd" id="data_dbms_dscd" class="select t5" >
-											<option value="source_system">소스시스템</option>	
-											<option value="target_system">타겟시스템</option>				
-										</select>	
-									</td>
-									<th scope="row" class="t9">DBMS구분</th>
-									<td><input type="text" name="dbms_dscd" id="dbms_dscd" class="txt t3"/></td>
-								</tr>
-							</tbody>
-						</table>							
-				</div>
-		<div class="pop_cmm3">
-			<p class="pop_s_tit"><spring:message code="schedule.workList"/></p>
-			<div class="overflow_area">
-					<table id="dataDataTable" class="display" cellspacing="0" width="100%">
-						<caption></caption>
+<div class="modal fade" id="pop_layer_db2pg_reg" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+	<div class="modal-dialog  modal-xl-top" role="document" style="margin: 30px 180px;">
+		<div class="modal-content" style="width:1300px;">		 
+			<div class="modal-body" style="margin-bottom:-30px;">
+				<h4 class="modal-title mdi mdi-alert-circle text-info" id="ModalLabel" style="padding-left:5px;">
+					<spring:message code="schedule.workReg"/>
+				</h4>
+				<div class="card" style="margin-top:10px;border:0px;">
+					<div class="card-body" style="border: 1px solid #adb5bd;">
+						<div class="form-inline row">
+							<div class="input-group mb-2 mr-sm-2 col-sm-2_6">
+								<input type="text" class="form-control" id="data_wrk_nm" name="data_wrk_nm" onblur="this.value=this.value.trim()" placeholder='<spring:message code="common.work_name" />'/>
+							</div>
+							<div class="input-group mb-2 mr-sm-2 col-sm-2_6">
+								<select class="form-control" name="data_dbms_dscd" id="data_dbms_dscd">
+									<option value="source_system"><spring:message code="migration.source_system" /></option>	
+									<option value="target_system"><spring:message code="migration.target_system" /></option>
+								</select>
+							</div>
+							<div class="input-group mb-2 mr-sm-2 col-sm-2_6">
+								<input type="text" class="form-control" id="dbms_dscd" name="dbms_dscd" onblur="this.value=this.value.trim()" placeholder='<spring:message code="migration.dbms_classification" />'/>
+							</div>
+							<button type="button" class="btn btn-inverse-primary btn-icon-text mb-2 btn-search-disable" onClick="fn_search3();" >
+								<i class="ti-search btn-icon-prepend "></i><spring:message code="common.search" />
+							</button>
+						</div>
+					</div>
+					<br>
+					
+					<div class="card-body" style="border: 1px solid #adb5bd;">
+						<p class="card-description"><spring:message code="schedule.workList"/></p>
+						
+						<table id="dataDataTable" class="table table-hover table-striped system-tlb-scroll" style="width:100%;">
 							<thead>
-								<tr>
+								<tr class="bg-info text-white">
 									<th width="10" rowspan="2"></th>
 									<th width="30" rowspan="2"><spring:message code="common.no" /></th>
-									<th width="100" rowspan="2">Work명</th>
-									<th width="200" rowspan="2">Work설명</th>
-									<th width="400" colspan="4">소스시스템</th>
-									<th width="400" colspan="4">타겟시스템</th>
+									<th width="100" rowspan="2"><spring:message code="common.work_name" /></th>
+									<th width="200" rowspan="2"><spring:message code="common.work_description" /></th>
+									<th width="440" colspan="4"><spring:message code="migration.source_system"/></th>
+									<th width="440" colspan="4"><spring:message code="migration.target_system"/></th>
 								</tr>
-								<tr>
-									<th width="100">DBMS 구분</th>
-									<th width="100">아이피</th>
+								<tr class="bg-info text-white">
+									<th width="140">DBMS <spring:message code="common.division" /></th>
+									<th width="100"><spring:message code="data_transfer.ip" /></th>
 									<th width="100">Database</th>
-									<th width="100">스키마</th>
-									<th width="100">DBMS 구분</th>
-									<th width="100">아이피</th>
+									<th width="100">Schema</th>
+									<th width="140">DBMS <spring:message code="common.division" /></th>
+									<th width="100"><spring:message code="data_transfer.ip" /></th>
 									<th width="100">Database</th>
-									<th width="100">스키마</th>
+									<th width="100">Schema</th>
 								</tr>
 							</thead>
-					</table>		
+						</table>
+					</div>
+					<br>
+					<div class="top-modal-footer" style="text-align: center !important; margin: -20px 0 0 -20px;" >
+						<input class="btn btn-primary" width="200px"style="vertical-align:middle;" type="button" onclick="fn_workAdd3()" value='<spring:message code="common.add" />' />
+						<button type="button" class="btn btn-light" data-dismiss="modal"><spring:message code="common.close"/></button>
+					</div>
+				</div>
 			</div>
 		</div>
-		
-		<div class="btn_type_02">
-			<span class="btn btnC_01"><button onClick="fn_workAdd();" type="button"><spring:message code="common.add" /></button></span>
-			<a href="#n" class="btn" onclick="window.close();"><span><spring:message code="common.cancel" /></span></a>
-		</div>
 	</div>
-</div>
-</body>
-</html>
+</div> 

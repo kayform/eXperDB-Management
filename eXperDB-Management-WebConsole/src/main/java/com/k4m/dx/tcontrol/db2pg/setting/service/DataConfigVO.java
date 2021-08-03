@@ -26,6 +26,7 @@ public class DataConfigVO {
 	private String lst_mdf_dtm;
 	private String trans_save_pth;
 	private String src_cnd_qry;
+	private String db2pg_uchr_lchr_val;
 
 	private String source_dbms_dscd;
 	private String source_ipadr;
@@ -44,6 +45,34 @@ public class DataConfigVO {
 	private String exrt_trg_tb_cnt;
 	private String exrt_exct_tb_nm;
 	private String exrt_exct_tb_cnt;
+
+	private int exrt_trg_tb_total_cnt;
+	private int exrt_exct_tb_total_cnt;
+
+	
+	@Override
+	public String toString() {
+		return "DataConfigVO [idx=" + idx + ", db2pg_trsf_wrk_id=" + db2pg_trsf_wrk_id + ", db2pg_trsf_wrk_nm="
+				+ db2pg_trsf_wrk_nm + ", db2pg_trsf_wrk_exp=" + db2pg_trsf_wrk_exp + ", frst_regr_id=" + frst_regr_id
+				+ ", frst_reg_dtm=" + frst_reg_dtm + ", lst_mdfr_id=" + lst_mdfr_id + ", lst_mdf_dtm=" + lst_mdf_dtm
+				+ ", trans_save_pth=" + trans_save_pth + ", wrk_id=" + wrk_id + "]";
+	}
+
+	public int getExrt_trg_tb_total_cnt() {
+		return exrt_trg_tb_total_cnt;
+	}
+
+	public void setExrt_trg_tb_total_cnt(int exrt_trg_tb_total_cnt) {
+		this.exrt_trg_tb_total_cnt = exrt_trg_tb_total_cnt;
+	}
+
+	public int getExrt_exct_tb_total_cnt() {
+		return exrt_exct_tb_total_cnt;
+	}
+
+	public void setExrt_exct_tb_total_cnt(int exrt_exct_tb_total_cnt) {
+		this.exrt_exct_tb_total_cnt = exrt_exct_tb_total_cnt;
+	}
 
 	public String getExrt_trg_tb_nm() {
 		return exrt_trg_tb_nm;
@@ -364,4 +393,12 @@ public class DataConfigVO {
 	public void setSrc_cnd_qry(String src_cnd_qry) {
 		this.src_cnd_qry = src_cnd_qry;
 	}
+	public String getDb2pg_uchr_lchr_val() {
+		return db2pg_uchr_lchr_val;
+	}
+
+	public void setDb2pg_uchr_lchr_val(String db2pg_uchr_lchr_val) {
+		this.db2pg_uchr_lchr_val = db2pg_uchr_lchr_val;
+	}
+
 }

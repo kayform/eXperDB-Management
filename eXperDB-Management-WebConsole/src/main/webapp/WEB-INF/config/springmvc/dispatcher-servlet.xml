@@ -12,6 +12,12 @@
 		<context:exclude-filter expression="org.springframework.stereotype.Service" type="annotation"/>
 		<context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation"/>
     </context:component-scan>
+    
+     <context:component-scan base-package="egovframework,com.experdb.management">
+		<context:include-filter expression="org.springframework.stereotype.Controller" type="annotation"/>
+		<context:exclude-filter expression="org.springframework.stereotype.Service" type="annotation"/>
+		<context:exclude-filter expression="org.springframework.stereotype.Repository" type="annotation"/>
+    </context:component-scan>
 
 	<bean class="org.springframework.context.annotation.CommonAnnotationBeanPostProcessor"/>
 
@@ -115,6 +121,17 @@
 		<property name="order" value="0" />
 	</bean>
 	<!-- /Excel -->
+	
+	<!-- Excel -->
+	<bean id="overallExcelView" class="com.k4m.dx.tcontrol.cmmn.OverallExcelBuilder" />
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="0" />
+	</bean>
+	<!-- /Excel -->
+	
+	<bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView">
+		<property name="contentType" value="text/html;charset=UTF-8"/>
+	</bean>
 	
 <!--     <mvc:view-controller path="/" view-name="login"/> -->
 </beans>

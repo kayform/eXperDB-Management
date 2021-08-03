@@ -60,4 +60,23 @@ public class DbmsDAO extends EgovAbstractMapper {
 		return sl;
 	}
 
+	public void deleteDBMS(int db2pg_sys_id) {
+		delete("dbmsSQL.deleteDBMS",db2pg_sys_id);
+	}
+
+	public int exeMigCheck() {
+		int migChk = (int) getSqlSession().selectOne("dbmsSQL.exeMigCheck");
+		return migChk;
+	}
+
+	public int db2pg_ddl_check(Map<String, Object> param) {
+		int db2pg_ddl_check = (int) getSqlSession().selectOne("dbmsSQL.db2pg_ddl_check", param);
+		return db2pg_ddl_check;
+	}
+
+	public int db2pg_mig_check(Map<String, Object> param) {
+		int db2pg_mig_check = (int) getSqlSession().selectOne("dbmsSQL.db2pg_mig_check", param);
+		return db2pg_mig_check;
+	}
+
 }

@@ -22,6 +22,10 @@ public class UserManagerServiceImpl extends EgovAbstractServiceImpl implements U
 		userManagerDAO.insertUserManager(userVo);
 	}
 
+	public void insertUserManagerHd(UserVO userVo) throws Exception {
+		userManagerDAO.insertUserManagerHd(userVo);
+	}
+
 	public List<UserVO> selectUserManager(Map<String, Object> param) throws Exception {
 		return userManagerDAO.selectUserManager(param);
 	}
@@ -41,4 +45,21 @@ public class UserManagerServiceImpl extends EgovAbstractServiceImpl implements U
 	public void updateUserManager(UserVO userVo) throws Exception {
 		userManagerDAO.updateUserManager(userVo);
 	}
+
+	public Map<String, Object> selectProfieView(Map<String, Object> param) throws Exception {
+		return userManagerDAO.selectProfieView(param);
+	}
+
+	public UserVO selectDetailUserManagerHd(String usr_id) throws Exception {
+		return userManagerDAO.selectDetailUserManagerHd(usr_id);
+	}
+
+	public void insertTransUser(UserVO userVo) throws Exception {
+		userManagerDAO.insertTransUser(userVo);
+	}
+
+	public void deleteUserManagerHd(String string) throws Exception {
+		userManagerDAO.deleteUserManagerHd(string);
+	}
+
 }

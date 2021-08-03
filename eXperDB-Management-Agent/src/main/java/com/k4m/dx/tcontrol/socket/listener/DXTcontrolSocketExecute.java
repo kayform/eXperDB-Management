@@ -2,6 +2,7 @@ package com.k4m.dx.tcontrol.socket.listener;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 
 import org.json.simple.JSONArray;
@@ -41,6 +42,14 @@ import com.k4m.dx.tcontrol.server.DxT030;
 import com.k4m.dx.tcontrol.server.DxT031;
 import com.k4m.dx.tcontrol.server.DxT032;
 import com.k4m.dx.tcontrol.server.DxT033;
+import com.k4m.dx.tcontrol.server.DxT034;
+import com.k4m.dx.tcontrol.server.DxT036;
+import com.k4m.dx.tcontrol.server.DxT037;
+import com.k4m.dx.tcontrol.server.DxT038;
+import com.k4m.dx.tcontrol.server.DxT039;
+import com.k4m.dx.tcontrol.server.DxT040;
+import com.k4m.dx.tcontrol.server.DxT041;
+import com.k4m.dx.tcontrol.server.DxT042;
 import com.k4m.dx.tcontrol.socket.ProtocolID;
 import com.k4m.dx.tcontrol.socket.SocketCtl;
 import com.k4m.dx.tcontrol.socket.TranCodeType;
@@ -339,6 +348,67 @@ public class DXTcontrolSocketExecute extends SocketCtl implements Runnable {
 					dxT033.execute(strDX_EX_CODE, objSERVER_INFO);
 
 					break;
+					
+				case TranCodeType.DxT034 :
+					
+					DxT034 dxT034 = new DxT034(client, is, os);
+					dxT034.execute(strDX_EX_CODE, jObj);
+			
+					break;
+
+				case TranCodeType.DxT036 :
+
+					DxT036 dxT036 = new DxT036(client, is, os);
+					dxT036.execute(strDX_EX_CODE, jObj);
+		
+					break;
+	
+				
+				case TranCodeType.DxT037 :
+		
+					DxT037 dxT037 = new DxT037(client, is, os);
+					dxT037.execute(strDX_EX_CODE, jObj);
+		
+					break;
+					
+					
+				case TranCodeType.DxT038 :
+					
+					DxT038 dxT038 = new DxT038(client, is, os);
+					dxT038.execute(strDX_EX_CODE, jObj);
+		
+					break;
+					
+				case TranCodeType.DxT039 :
+					
+					DxT039 dxT039 = new DxT039(client, is, os);
+					dxT039.execute(strDX_EX_CODE, jObj);
+		
+					break;
+					
+				case TranCodeType.DxT040 :
+						
+					
+					DxT040 dxT040 = new DxT040(client, is, os);
+					dxT040.execute(strDX_EX_CODE, jObj);
+
+					break;
+
+				case TranCodeType.DxT041 :
+						
+					
+					DxT041 dxT041 = new DxT041(client, is, os);
+					dxT041.execute(strDX_EX_CODE, jObj);
+	
+					break;
+					
+				case TranCodeType.DxT042 :
+						
+					
+					DxT042 dxT042 = new DxT042(client, is, os);
+					dxT042.execute(strDX_EX_CODE, jObj);
+	
+					break;
 				}
 				objSERVER_INFO = null;
 
@@ -346,6 +416,12 @@ public class DXTcontrolSocketExecute extends SocketCtl implements Runnable {
 			
 		} catch(Exception e) {
 			errLogger.error("{} {}", "experDB Socket Execute Error : ", e.toString());
+		}finally{
+			try{
+				client.close();
+			}catch(IOException e){
+				errLogger.error("{} {}", "experDB Socket Close Error : ", e.toString());
+			}
 		}
 		
 	}

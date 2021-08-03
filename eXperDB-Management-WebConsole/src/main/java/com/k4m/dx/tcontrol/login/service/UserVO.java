@@ -1,5 +1,7 @@
 package com.k4m.dx.tcontrol.login.service;
 
+import java.util.Date;
+
 public class UserVO {
 	
 	private int idx; //idx
@@ -19,7 +21,8 @@ public class UserVO {
 	private String frst_reg_dtm;//최초_등록_일시
 	private String lst_mdfr_id;//최종_수정자_ID
 	private String lst_mdf_dtm;//최종_수정_일시
-	
+	private String loginChkYn;//로그인 유지체크
+
 	private int mnu_id;
 
 	//로그인 이력
@@ -31,6 +34,36 @@ public class UserVO {
 	private String log_out_dtm_date; //로그아웃 일시(일자)
 	private String log_out_dtm_hour; //로그아웃 일시(시간)
 	
+	private String pwd_edc;//비밀번호
+	private String salt_value; //salt 값
+
+	private Date sessionDate;
+	private String prmId;
+
+	public String getSalt_value() {
+		return salt_value;
+	}
+	public void setSalt_value(String salt_value) {
+		this.salt_value = salt_value;
+	}
+	public String getPwd_edc() {
+		return pwd_edc;
+	}
+	public void setPwd_edc(String pwd_edc) {
+		this.pwd_edc = pwd_edc;
+	}
+	public Date getSessionDate() {
+		return sessionDate;
+	}
+	public void setSessionDate(Date sessionDate) {
+		this.sessionDate = sessionDate;
+	}
+	public String getPrmId() {
+		return prmId;
+	}
+	public void setPrmId(String prmId) {
+		this.prmId = prmId;
+	}
 	private int rownum; //rownum
 	public int getRownum() {
 		return rownum;
@@ -183,15 +216,18 @@ public class UserVO {
 		this.log_out_dtm_hour = log_out_dtm_hour;
 	}
 	
-	
 	public int getMnu_id() {
 		return mnu_id;
 	}
 	public void setMnu_id(int mnu_id) {
 		this.mnu_id = mnu_id;
 	}
+	public String getLoginChkYn() {
+		return loginChkYn;
+	}
+	public void setLoginChkYn(String loginChkYn) {
+		this.loginChkYn = loginChkYn;
+	}
 
-	
-	
 	
 }

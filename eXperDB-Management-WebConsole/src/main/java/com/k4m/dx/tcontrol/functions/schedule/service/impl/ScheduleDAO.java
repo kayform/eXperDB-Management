@@ -1,5 +1,6 @@
 package com.k4m.dx.tcontrol.functions.schedule.service.impl;
 
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +20,14 @@ import egovframework.rte.psl.dataaccess.EgovAbstractMapper;
 public class ScheduleDAO extends EgovAbstractMapper{
 
 	@SuppressWarnings({ "deprecation", "unchecked" })
-	public List<WorkVO> selectWorkList(WorkVO workVO) {
+	public List<WorkVO> selectWorkList(WorkVO workVO, String locale_type) {
 		List<WorkVO> sl = null;
-		sl = (List<WorkVO>) list("scheduleSql.selectWorkList", workVO);
+		if(locale_type.equals("ko")){
+			sl = (List<WorkVO>) list("scheduleSql.selectWorkList", workVO);
+		}else{
+			sl = (List<WorkVO>) list("scheduleSql.selectWorkListEN", workVO);
+		}
+		
 		return sl;
 	}
 
@@ -29,7 +35,12 @@ public class ScheduleDAO extends EgovAbstractMapper{
 	@SuppressWarnings({ "deprecation", "unchecked" })
 	public List<Map<String, Object>> selectScheduleWorkList(HashMap paramvalue) {
 		List<Map<String, Object>> sl = null;
-		sl = (List<Map<String, Object>>) list("scheduleSql.selectScheduleWorkList", paramvalue);		
+		if(paramvalue.get("locale_type").equals("ko")){
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectScheduleWorkList", paramvalue);
+		}else{
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectScheduleWorkListEN", paramvalue);	
+		}
+			
 		return sl;
 	}
 
@@ -144,29 +155,46 @@ public class ScheduleDAO extends EgovAbstractMapper{
 	}
 
 
-	public List<Map<String, Object>> selectWrkScheduleList(int scd_id) {
+	public List<Map<String, Object>> selectWrkScheduleList(int scd_id, String locale_type) {
 		List<Map<String, Object>> sl = null;
-		sl = (List<Map<String, Object>>) list("scheduleSql.selectWrkScheduleList", scd_id);		
+		if(locale_type.equals("ko")){
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectWrkScheduleList", scd_id);					
+		}else {
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectWrkScheduleListEN", scd_id);		
+		}
 		return sl;
 	}
 
 
-	public List<Map<String, Object>> selectWorkDivList() {
+	public List<Map<String, Object>> selectWorkDivList(String locale_type) {
 		List<Map<String, Object>> sl = null;
-		sl = (List<Map<String, Object>>) list("scheduleSql.selectWorkDivList", null);		
+		if(locale_type.equals("ko")){
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectWorkDivList", null);
+		}else{
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectWorkDivListEN", null);	
+		}
+		
 		return sl;
 	}
 
 
-	public List<Map<String, Object>> selectScdInfo(int scd_id) {
+	public List<Map<String, Object>> selectScdInfo(int scd_id, String locale_type) {
 		List<Map<String, Object>> sl = null;
-		sl = (List<Map<String, Object>>) list("scheduleSql.selectScdInfo", scd_id);		
+		
+		if(locale_type.equals("ko")){
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectScdInfo", scd_id);	
+		}else{
+			sl = (List<Map<String, Object>>) list("scheduleSql.selectScdInfoEn", scd_id);	
+		}
+			
 		return sl;
 	}
 
 
 	public List<Map<String, Object>> selectWrkInfo(int wrk_id) {
 		List<Map<String, Object>> sl = null;
+		
+		
 		sl = (List<Map<String, Object>>) list("scheduleSql.selectWrkInfo", wrk_id);		
 		return sl;
 	}
@@ -218,5 +246,31 @@ public class ScheduleDAO extends EgovAbstractMapper{
 		sl = (List<Map<String, Object>>) list("scheduleSql.selectDb2pgScheduleWorkList", paramvalue);		
 		return sl;
 	}
+
+
+	public void insertMigExe(Map<String, Object> param) {
+		insert("db2pgHistorySql.insertMigExe", param);
+	}
+	
+	public void updateMigExe(Map<String, Object> param) {
+		update("db2pgHistorySql.updateMigExe", param);
+	}
+
+
+	public String selectOldSavePath(int wrk_id) {
+		String oldSavePath = getSqlSession().selectOne("scheduleSql.selectOldSavePath",wrk_id);
+		return oldSavePath;
+	}
+
+
+	public void updateSavePth(Map<String, Object> param) {
+		update("db2pgSettingSql.updateTransSavePth", param);
+	}
+
+
+	public void updateScheduler(WrkExeVO wrkExeVO) {
+		update("scheduleHistorySql.updateScheduler", wrkExeVO);
+	}
+
 
 }

@@ -60,4 +60,26 @@ public class DbmsServiceImpl extends EgovAbstractServiceImpl implements DbmsServ
 		return dbmsDAO.selectDDLDb2pgDBMS(db2pgSysInfVO);
 	}
 
+	@Override
+	public void deleteDBMS(int db2pg_sys_id) throws Exception {
+		dbmsDAO.deleteDBMS(db2pg_sys_id);
+	}
+
+	@Override
+	public int exeMigCheck() throws Exception {
+		return dbmsDAO.exeMigCheck();
+	}
+
+
+	@Override
+	public int db2pg_ddl_check(Map<String, Object> param) {
+		return dbmsDAO.db2pg_ddl_check(param);
+	}
+
+	@Override
+	public int db2pg_mig_check(Map<String, Object> param) {
+		return dbmsDAO.db2pg_mig_check(param);
+	}
+
+
 }

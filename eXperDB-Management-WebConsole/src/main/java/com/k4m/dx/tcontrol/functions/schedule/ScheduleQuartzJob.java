@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.json.simple.JSONObject;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -21,9 +23,9 @@ import com.k4m.dx.tcontrol.cmmn.client.ClientInfoCmmn;
 import com.k4m.dx.tcontrol.common.service.AgentInfoVO;
 import com.k4m.dx.tcontrol.common.service.CmmnServerInfoService;
 import com.k4m.dx.tcontrol.db2pg.cmmn.DB2PG_START;
-import com.k4m.dx.tcontrol.db2pg.history.service.Db2pgHistoryService;
 import com.k4m.dx.tcontrol.functions.schedule.service.ScheduleService;
 import com.k4m.dx.tcontrol.functions.schedule.service.WrkExeVO;
+import com.k4m.dx.tcontrol.login.service.LoginVO;
 
 public class ScheduleQuartzJob implements Job{
 
@@ -31,8 +33,6 @@ public class ScheduleQuartzJob implements Job{
 	private CmmnServerInfoService cmmnServerInfoService;
 	
 	@SuppressWarnings("unused")
-	@Autowired
-	private Db2pgHistoryService db2pgHistoryService;
 	
 	private ConfigurableApplicationContext context;
 	
@@ -109,11 +109,13 @@ public class ScheduleQuartzJob implements Job{
 	        	ArrayList<String> BCK_NM = new ArrayList<String>();        	
 	        	ArrayList<String> CMD = new ArrayList<String>();
 	        	
-	        	System.out.println("사이즈 = "+resultWork.size());
+	        	
 	        	
 	        	
 		        //WORK 갯수만큼 루프
-				for(int i =0; i<resultWork.size(); i++){					
+				for(int i =0; i<resultWork.size(); i++){				
+					
+					
 					//DSN_DSCD==TC001901 백업
 					if(resultWork.get(i).get("bsn_dscd").toString().equals("TC001901")){			
 						resultDbconn= scheduleService.selectDbconn(Integer.parseInt(scd_id));
@@ -152,7 +154,7 @@ public class ScheduleQuartzJob implements Job{
 									 // ArrayList 생성
 									ArrayList arr = new ArrayList();
 		
-									System.out.println("▶▶▶ Running중인 동일한 RMAN 체크 . . . ");
+									System.out.println(">>> Running중인 동일한 RMAN 체크 . . . ");
 									
 									// 실행중인 RMAN의 백업디렉토리와 현재 실행할  RMAN의 디렉토리가 같으면 1, 다르면 0
 									for(int k=0; k<runSchedule.size(); k++){
@@ -183,11 +185,11 @@ public class ScheduleQuartzJob implements Job{
 										vo.setDb_svr_ipadr_id(Integer.parseInt(resultWork.get(i).get("db_svr_ipadr_id").toString()));
 										
 										//스케줄 상태변경
-										System.out.println("▶▶▶ 스케줄 상태변경(실행 -> 중지)");
+										System.out.println(">>> Schedule Status Change (실행 -> 중지)");
 										scheduleService.updateSCD_CNDT(vo);
 										
 										//스케줄 이력등록
-										System.out.println("▶▶▶ 스케줄이력등록(실패, 동일한 RMAN 작업 실행중)");
+										System.out.println(">>> Schedule history insert (실패, 동일한 RMAN 작업 실행중)");
 										scheduleService.insertT_WRKEXE_G(vo);
 										
 										return;
@@ -203,59 +205,68 @@ public class ScheduleQuartzJob implements Job{
 								}
 								BCK_NM.add("OnlinBackup");
 							}		
-					//DSN_DSCD==TC001902 스크립트
+							
+							//agentCall(resultWork, CMD, BCK_NM, resultDbconn, db_svr_ipadr_id);
+							
+					//DSN_DSCD==TC001902 배치
 					}else if(resultWork.get(i).get("bsn_dscd").toString().equals("TC001902")){
 						resultDbconn= scheduleService.selectDbconn(Integer.parseInt(scd_id));
 						db_svr_ipadr_id = Integer.parseInt(resultDbconn.get(0).get("db_svr_ipadr_id").toString());
 						String strCmd =resultWork.get(i).get("exe_cmd").toString();						
 						CMD.add(strCmd);
 						BCK_NM.add("SCRIPT");
-					//DSN_DSCD==TC001903 DB2PG 데이터이행	
-					}else if(resultWork.get(i).get("bsn_dscd").toString().equals("TC001903")){
 						
+						//agentCall(resultWork, CMD, BCK_NM, resultDbconn, db_svr_ipadr_id);
+						
+						
+					//DSN_DSCD==TC001903 DB2PG 데이터이관	
+					}else if(resultWork.get(i).get("bsn_dscd").toString().equals("TC001903")){
+
+						CMD.add("");						
+						
+						/*int wrk_id = Integer.parseInt(resultWork.get(i).get("wrk_id").toString());						
+						String oldSavePath = scheduleService.selectOldSavePath(wrk_id);
+								
+						System.out.println("wrk_id= " +  wrk_id);
+						System.out.println("DB2PG oldSavePath = "+ oldSavePath);
+												
 						int intSeq = scheduleService.selectQ_WRKEXE_G_01_SEQ();
 						int intGrpSeq = scheduleService.selectQ_WRKEXE_G_02_SEQ();
 						WrkExeVO vo = new WrkExeVO();
-						
+										
 						db2pg = resultWork.get(i).get("bsn_dscd").toString();
 						
 						Map<String, Object> result = null;
-						Map<String, Object> param = new HashMap<String, Object>();
+						//Map<String, Object> param = new HashMap<String, Object>();
 						
 						JSONObject obj = new JSONObject();
 						obj.put("wrk_nm", resultWork.get(i).get("wrk_nm"));		
-					
-						result  = DB2PG_START.db2pgStart(obj);
-						
-						param.put("wrk_id", resultWork.get(i).get("wrk_id"));
-						param.put("wrk_strt_dtm", result.get("RESULT_startTime"));
-						param.put("wrk_end_dtm", result.get("RESULT_endTime"));
-						
-						if(result.get("RESULT").equals("SUCCESS")){
-							vo.setExe_rslt_cd("TC001701");
-							param.put("exe_rslt_cd", "TC001701");
-						}else{
-							param.put("exe_rslt_cd", "TC001702");
-							vo.setExe_rslt_cd("TC001702");
-						}
-						param.put("rslt_msg", result.get("RESULT_MSG"));
-						param.put("frst_regr_id", result.get("lst_mdfr_id"));
-						param.put("lst_mdfr_id", result.get("lst_mdfr_id"));
-						
+						obj.put("oldSavePath", oldSavePath);
+						obj.put("wrk_id", resultWork.get(i).get("wrk_id"));
+						obj.put("lst_mdfr_id", resultWork.get(i).get("lst_mdfr_id"));
+										
 						vo.setExe_sn(intSeq);
 						vo.setScd_id(Integer.parseInt(resultWork.get(i).get("scd_id").toString()));
 						vo.setWrk_id(Integer.parseInt(resultWork.get(i).get("wrk_id").toString()));
-						vo.setWrk_strt_dtm(result.get("RESULT_startTime").toString());
-						vo.setWrk_end_dtm(result.get("RESULT_endTime").toString());
 						vo.setExe_grp_sn(intGrpSeq);
 						
 						scheduleService.insertT_WRKEXE_G(vo);
-						db2pgHistoryService.insertImdExe(param);
-					}					
+						
+						result  = DB2PG_START.db2pgStart(obj);
+						
+						if(result.get("RESULT").equals("SUCCESS")){
+							vo.setExe_rslt_cd("TC001701");
+						}else{
+							vo.setExe_rslt_cd("TC001702");
+						}
+						
+						scheduleService.updateScheduler(vo);
+							*/				
+					}				
 				}		
-				if(!db2pg.equals("TC001903")){
-					agentCall(resultWork, CMD, BCK_NM, resultDbconn, db_svr_ipadr_id);
-				}
+							
+				agentCall(resultWork, CMD, BCK_NM, resultDbconn, db_svr_ipadr_id);
+				
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -468,13 +479,33 @@ public class ScheduleQuartzJob implements Job{
 			rmanCmd += " --compress-data";
 		}
 				
-		rmanCmd += " --keep-data-generations="+resultWork.get(i).get("bck_mtn_ecnt");
-		rmanCmd += " --keep-data-days="+resultWork.get(i).get("file_stg_dcnt");
-		rmanCmd += " --keep-arclog-files="+resultWork.get(i).get("acv_file_mtncnt");
-		rmanCmd += " --keep-arclog-days="+resultWork.get(i).get("acv_file_stgdt");
-		rmanCmd += " --keep-srvlog-files="+resultWork.get(i).get("log_file_mtn_ecnt");
-		rmanCmd += " --keep-srvlog-days="+resultWork.get(i).get("log_file_stg_dcnt");
-
+		
+		if(resultWork.get(i).get("bck_opt_cd").toString().equals("TC000303")){			
+			if(Integer.parseInt(resultWork.get(i).get("acv_file_mtncnt").toString()) != 0){
+				rmanCmd += " --keep-arclog-files="+resultWork.get(i).get("acv_file_mtncnt");
+			}if(Integer.parseInt(resultWork.get(i).get("acv_file_stgdt").toString()) != 0){
+				rmanCmd += " --keep-arclog-days="+resultWork.get(i).get("acv_file_stgdt");
+			}if(Integer.parseInt(resultWork.get(i).get("log_file_mtn_ecnt").toString()) != 0){
+				rmanCmd += " --keep-srvlog-files="+resultWork.get(i).get("log_file_mtn_ecnt");
+			}if(Integer.parseInt(resultWork.get(i).get("log_file_stg_dcnt").toString()) != 0){
+				rmanCmd += " --keep-srvlog-days="+resultWork.get(i).get("log_file_stg_dcnt");
+			}
+		}else{		
+			if(Integer.parseInt(resultWork.get(i).get("bck_mtn_ecnt").toString()) != 0){
+				rmanCmd += " --keep-data-generations="+resultWork.get(i).get("bck_mtn_ecnt");
+			}if(Integer.parseInt(resultWork.get(i).get("file_stg_dcnt").toString()) != 0){
+				rmanCmd += " --keep-data-days="+resultWork.get(i).get("file_stg_dcnt");
+			}if(Integer.parseInt(resultWork.get(i).get("acv_file_mtncnt").toString()) != 0){
+				rmanCmd += " --keep-arclog-files="+resultWork.get(i).get("acv_file_mtncnt");
+			}if(Integer.parseInt(resultWork.get(i).get("acv_file_stgdt").toString()) != 0){
+				rmanCmd += " --keep-arclog-days="+resultWork.get(i).get("acv_file_stgdt");
+			}if(Integer.parseInt(resultWork.get(i).get("log_file_mtn_ecnt").toString()) != 0){
+				rmanCmd += " --keep-srvlog-files="+resultWork.get(i).get("log_file_mtn_ecnt");
+			}if(Integer.parseInt(resultWork.get(i).get("log_file_stg_dcnt").toString()) != 0){
+				rmanCmd += " --keep-srvlog-days="+resultWork.get(i).get("log_file_stg_dcnt");
+			}
+		}
+	
 		//rmanCmd += " >> "+resultWork.get(i).get("log_file_pth")+"/"+resultWork.get(i).get("wrk_nm").toString().replaceAll(" ", "")+".log 2>&1";
 		return rmanCmd;	
 	}
@@ -491,9 +522,9 @@ public class ScheduleQuartzJob implements Job{
 				ClientInfoCmmn clc = new ClientInfoCmmn();
 			
 				
-				System.out.println("resultWork 사이즈="+resultWork.size());				
-				System.out.println("CMD 사이즈="+CMD.size());	
-				System.out.println("BCKNM 사이즈="+BCKNM.size());	
+				/*System.out.println("resultWork Size="+resultWork.size());				
+				System.out.println("CMD Size="+CMD.size());	
+				System.out.println("BCKNM Size="+BCKNM.size());	*/
 				
 				
 				clc.db_backup(resultWork, CMD, IP ,PORT, BCKNM, db_svr_ipadr_id);	
@@ -501,7 +532,6 @@ public class ScheduleQuartzJob implements Job{
 			e.printStackTrace();
 		}
 	}
-	
 	
 
 

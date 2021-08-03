@@ -20,6 +20,7 @@ import org.json.simple.parser.JSONParser;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -138,7 +139,7 @@ public class ScheduleController {
 	@RequestMapping(value = "/popup/scheduleRegForm.do")
 	public ModelAndView scheduleRegForm(@ModelAttribute("historyVO") HistoryVO historyVO, HttpServletRequest request) {
 		
-		ModelAndView mv = new ModelAndView();
+		ModelAndView mv = new ModelAndView("jsonView");
 	
 		try {
 			//해당메뉴 권한 조회 (공통메소드호출)
@@ -158,8 +159,6 @@ public class ScheduleController {
 				historyVO.setExe_dtl_cd("DX-T0043");
 				historyVO.setMnu_id(2);
 				accessHistoryService.insertHistory(historyVO);
-				
-				mv.setViewName("popup/scheduleRegForm");	
 			}			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -204,8 +203,9 @@ public class ScheduleController {
 				System.out.println("구분 : " + workVO.getBsn_dscd());
 				System.out.println("워크명 : " + workVO.getWrk_nm());
 				System.out.println("=====================");
+				String locale_type = LocaleContextHolder.getLocale().getLanguage();
 				
-				resultSet = scheduleService.selectWorkList(workVO);	
+				resultSet = scheduleService.selectWorkList(workVO, locale_type);	
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -223,7 +223,6 @@ public class ScheduleController {
 	@RequestMapping(value = "/selectScheduleWorkList.do")
 	@ResponseBody
 	public List<Map<String, Object>> selectScheduleWorkList(@ModelAttribute("historyVO") HistoryVO historyVO, HttpServletRequest request, HttpServletResponse response) {
-	
 		try {
 			//해당메뉴 권한 조회 (공통메소드호출)
 			CmmnUtils cu = new CmmnUtils();
@@ -231,7 +230,9 @@ public class ScheduleController {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
+		int cnt = Integer.parseInt(request.getParameter("tCnt"));
+
 		List<Map<String, Object>> result = null;
 		
 		try {					
@@ -241,17 +242,21 @@ public class ScheduleController {
 				return result;
 			}else{		
 				String work_id = request.getParameter("work_id");
-				
+
 				String[] Param = work_id.toString().substring(1, work_id.length()-1 ).split(",");
 				HashMap<String , Object> paramvalue = new HashMap<String, Object>();
 				List<String> ids = new ArrayList<String>(); 
-				
+				String locale_type = LocaleContextHolder.getLocale().getLanguage();
+
 				for(int i=0; i<Param.length; i++){
 					ids.add(Param[i].toString()); 
 				}
 				paramvalue.put("work_id", ids);
+				paramvalue.put("cnt", cnt);
+				paramvalue.put("locale_type", locale_type);
 				
 				result = scheduleService.selectScheduleWorkList(paramvalue);
+
 				return result;
 			}
 		} catch (Exception e) {
@@ -281,6 +286,8 @@ public class ScheduleController {
 		
 		List<Map<String, Object>> result = null;
 		
+		int cnt = Integer.parseInt(request.getParameter("tCnt"));
+		
 		try {					
 			//읽기 권한이 없는경우 error페이지 호출 , [추후 Exception 처리예정]
 			if(menuAut.get(0).get("read_aut_yn").equals("N")){
@@ -296,7 +303,9 @@ public class ScheduleController {
 				for(int i=0; i<Param.length; i++){
 					ids.add(Param[i].toString()); 
 				}
+				
 				paramvalue.put("work_id", ids);
+				paramvalue.put("cnt", cnt);
 				
 				result = scheduleService.selectDb2pgScheduleWorkList(paramvalue);
 				return result;
@@ -614,6 +623,7 @@ public class ScheduleController {
 		try {
 			
 			String scd_cndt = request.getParameter("scd_cndt");
+			String scd_nm = request.getParameter("scd_nm");
 
 			//읽기 권한이 없는경우 error페이지 호출 , [추후 Exception 처리예정]
 			if(menuAut.get(0).get("read_aut_yn").equals("N")){
@@ -630,6 +640,11 @@ public class ScheduleController {
 				if(scd_cndt != null){
 					mv.addObject("scd_cndt", scd_cndt);
 				}
+
+				if(scd_nm != null){
+					mv.addObject("scd_nm", scd_nm);
+				}
+				
 				mv.setViewName("functions/scheduler/schedulerList");
 			}	
 		} catch (Exception e) {
@@ -789,25 +804,25 @@ public class ScheduleController {
 				historyVO.setMnu_id(23);
 				accessHistoryService.insertHistory(historyVO);
 				
-				String strRows = request.getParameter("sWork").toString().replaceAll("&quot;", "\"");
-				JSONObject rows = (JSONObject) new JSONParser().parse(strRows);
+//				String strRows = request.getParameter("sWork").toString().replaceAll("&quot;", "\"");
+//				JSONObject rows = (JSONObject) new JSONParser().parse(strRows);
 				
-				scheduleVO.setScd_id(Integer.parseInt(rows.get("scd_id").toString()));
+				scheduleVO.setScd_id(Integer.parseInt(request.getParameter("scd_id").toString()));
 				scheduleVO.setScd_cndt("TC001801");
 	
 				scheduleService.updateScheduleStatus(scheduleVO);
 				
-				scheduleVO.setExe_perd_cd(rows.get("exe_perd_cd").toString());
-				if(rows.get("exe_dt") != null){
-					scheduleVO.setExe_dt(rows.get("exe_dt").toString());
+				scheduleVO.setExe_perd_cd(request.getParameter("exe_perd_cd"));
+				if(request.getParameter("exe_dt") != null){
+					scheduleVO.setExe_dt(request.getParameter("exe_dt"));
 				}
-				if(rows.get("exe_month") != null){
-					scheduleVO.setExe_month(rows.get("exe_month").toString());
+				if(request.getParameter("exe_month") != null){
+					scheduleVO.setExe_month(request.getParameter("exe_month"));
 				}
-				if(rows.get("exe_day") != null){
-					scheduleVO.setExe_day(rows.get("exe_day").toString());
+				if(request.getParameter("exe_day") != null){
+					scheduleVO.setExe_day(request.getParameter("exe_day"));
 				}
-				scheduleVO.setExe_hms(rows.get("exe_hms").toString());
+				scheduleVO.setExe_hms(request.getParameter("exe_hms"));
 			
 				scheduleUtl.insertSchdul(scheduleVO);		
 			}
@@ -929,7 +944,7 @@ public class ScheduleController {
 				response.sendRedirect("/autError.do");
 			}else{				
 				int scd_id  = Integer.parseInt(request.getParameter("scd_id").toString());
-				System.out.println(scd_id);
+
 				result = scheduleService.selectModifyScheduleList(scd_id);
 			}
 
@@ -1277,7 +1292,8 @@ public class ScheduleController {
 				response.sendRedirect("/autError.do");
 			}else{
 				int scd_id  = Integer.parseInt(request.getParameter("scd_id").toString());
-				result = scheduleService.selectWrkScheduleList(scd_id);
+				String locale_type = LocaleContextHolder.getLocale().getLanguage();
+				result = scheduleService.selectWrkScheduleList(scd_id, locale_type);
 			}
 
 		} catch (Exception e) {
@@ -1301,7 +1317,8 @@ public class ScheduleController {
 	
 		List<Map<String, Object>> resultSet = null;
 		try {			
-			resultSet = scheduleService.selectWorkDivList();	
+			String locale_type = LocaleContextHolder.getLocale().getLanguage();
+			resultSet = scheduleService.selectWorkDivList(locale_type);	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -1532,7 +1549,7 @@ public class ScheduleController {
 	@RequestMapping(value = "/popup/db2pgWorkRegForm.do")
 	public ModelAndView db2pgWorkRegForm(@ModelAttribute("historyVO") HistoryVO historyVO, HttpServletRequest request) {
 		
-		ModelAndView mv = new ModelAndView();
+		ModelAndView mv = new ModelAndView("jsonView");
 	
 		try {
 			//해당메뉴 권한 조회 (공통메소드호출)
@@ -1553,7 +1570,6 @@ public class ScheduleController {
 				historyVO.setMnu_id(2);
 				accessHistoryService.insertHistory(historyVO);
 				
-				mv.setViewName("popup/db2pgWorkRegForm");	
 			}			
 		} catch (Exception e) {
 			e.printStackTrace();

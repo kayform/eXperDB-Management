@@ -86,4 +86,58 @@ public class UserManagerDAO extends EgovAbstractMapper{
 	public void updateUserManager(UserVO userVo) throws SQLException {
 		update("userManagerSql.updateUserManager", userVo);	
 	}
+	
+	/**
+	 * top 화면 profile 조회
+	 * 
+	 * @param instanceScaleVO
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "deprecation", "unchecked" })
+	public Map<String, Object> selectProfieView(Map<String, Object> param) {
+		return (Map<String, Object>) selectOne("userManagerSql.selectProfieView", param);
+	}
+	
+	/**
+	 * 사용자 등록 backup
+	 * 
+	 * @param userVo
+	 * @throws SQLException
+	 */
+	public void insertUserManagerHd(UserVO userVo) throws SQLException{
+		insert("userManagerSql.insertUserManagerHd", userVo);
+
+	}
+	
+	/**
+	 * 사용자 상세정보 조회 backup
+	 * 
+	 * @param usr_id
+	 * @return List
+	 * @throws SQLException
+	 */
+	public UserVO selectDetailUserManagerHd(String usr_id) throws SQLException {
+		return (UserVO) selectOne("userManagerSql.selectDetailUserManagerHd", usr_id);
+	}
+	
+	/**
+	 * 사용자 등록 backup
+	 * 
+	 * @param userVo
+	 * @throws SQLException
+	 */
+	public void insertTransUser(UserVO userVo) throws SQLException{
+		insert("userManagerSql.insertTransUser", userVo);
+	}
+	
+	/**
+	 * 사용자 삭제(백업)
+	 * 
+	 * @param string
+	 * @throws SQLException
+	 */
+	public void deleteUserManagerHd(String string) throws SQLException {
+		delete("userManagerSql.deleteUserManagerHd", string);
+	}
+
 }

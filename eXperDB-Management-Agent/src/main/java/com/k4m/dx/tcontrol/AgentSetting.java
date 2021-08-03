@@ -10,10 +10,7 @@ import java.util.Properties;
 import java.util.Scanner;
 
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
-import org.json.simple.JSONObject;
 
-import com.k4m.dx.tcontrol.socket.ProtocolID;
-import com.k4m.dx.tcontrol.socket.TranCodeType;
 import com.k4m.dx.tcontrol.util.NetworkUtil;
 
 
@@ -50,8 +47,12 @@ public class AgentSetting {
 		String strAgentIp = "";
 		String strAgentPort = "";
 		
-		
-		
+		String strTransPath = "";
+
+		String strProxyYN = "";
+		String strProxyInterYN = "";
+		String strProxyInterIP = "";
+
 		Scanner scan = new Scanner(System.in);
 		
 		String localIp = NetworkUtil.getLocalServerIp();
@@ -159,7 +160,64 @@ public class AgentSetting {
 				break;
 			}
 		}
+		
+		//trans setting 추가
+		System.out.println("trans path :(/home/experdb/programs/kafka)");
+		strTransPath = scan.nextLine();
+		if(strTransPath.equals("")) {
+			strTransPath = "/home/experdb/programs/kafka";
+		} 
+		
+		/* Proxy in/out 사용여부 */
+		System.out.println("Whether Proxy-Service is enabled (y, n) :");
+		strProxyYN = scan.nextLine();
+		strProxyYN = strProxyYN.toUpperCase();
+		while (true) {
+			if(strProxyYN.equals("")) {
+				System.out.println("Please enter your Proxy-Service setting yn. ");
+				System.out.println("Whether Proxy Service is enabled (y, n) :");
+				strProxyYN = scan.nextLine();
+				strProxyYN = strProxyYN.toUpperCase();
+			} else {
+				break;
+			}
+		}
 
+		//proxy 내부 ip 사용여부
+		if(strProxyYN.equals("Y")){
+			System.out.println("Whether to Proxy use internal IP (y, n) :");
+			strProxyInterYN = scan.nextLine();
+			strProxyInterYN = strProxyInterYN.toUpperCase();
+
+			while (true) {
+				if(strProxyInterYN.equals("")) {
+					System.out.println("Please enter your Proxy use internal IP yn. ");
+					System.out.println("Whether to Proxy use internal IP (y, n) :");
+					strProxyInterYN = scan.nextLine();
+					strProxyInterYN = strProxyInterYN.toUpperCase();
+				} else {
+					break;
+				}
+			}
+		}
+
+		//proxy 내부 ip 
+		if(strProxyInterYN.equals("Y")){
+			System.out.println("Proxy Internal IP :");
+			strProxyInterIP = scan.nextLine();
+			strProxyInterIP = strProxyInterIP.toUpperCase();
+
+			while (true) {
+				if(strProxyInterIP.equals("")) {
+					System.out.println("Please enter your Proxy Internal IP. ");
+					System.out.println("Proxy Internal IP :");
+					strProxyInterIP = scan.nextLine();
+					strProxyInterIP = strProxyInterIP.toUpperCase();
+				} else {
+					break;
+				}
+			}
+		}
 		
 		strDatabaseUrl = "jdbc:postgresql://" + strDatabaseIp + ":" + strDatabasePort + "/" + strDatabaseName;
 		
@@ -169,6 +227,11 @@ public class AgentSetting {
 		System.out.println("database Connection Info :" + strDatabaseUrl);
 		System.out.println("database.username :" + strDatabaseUsername);
 		System.out.println("database.password :" + strDatabasePassword);
+		System.out.println("trans_path :" + strTransPath);
+
+		System.out.println("proxy_yn :" + strProxyYN);
+		System.out.println("proxy_inter_yn :" + strProxyInterYN);
+		System.out.println("proxy_inter_ip :" + strProxyInterIP);
 		System.out.println("#####################################################");
 		
 		
@@ -234,7 +297,14 @@ public class AgentSetting {
 		    
 		    prop.setProperty("socket.server.port", strAgentPort);
 		    prop.setProperty("agent.install.ip", strAgentIp);
+
+		    prop.setProperty("agent.trans_path", strTransPath);
 		    
+
+		    prop.setProperty("agent.proxy_yn", strProxyYN);
+		    prop.setProperty("agent.proxy_inter_yn", strProxyInterYN);
+		    prop.setProperty("agent.proxy_inter_ip", strProxyInterIP);
+
 		    try {
 		    	prop.store(new FileOutputStream(path + "context.properties"), "");
 		    } catch(FileNotFoundException e) {
